@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         String psw = pswText.getText().toString();
         String params = "uname="+username+"&psw="+psw;
 
-        AsyncPetition("http://10.0.2.2:9000/Application/androidLogin","GET",params,(result -> {
+        Utils.AsyncPetition("http://10.0.2.2:9000/Application/androidLogin","GET",params,(result -> {
             try {
                 JSONObject jsonObject = new JSONObject(result);
                 if(jsonObject.has("login")) {
@@ -64,60 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }));
-
     }
 
-    private interface HandleFunction{
-        public void run(String result);
-    }
 
-    public void AsyncPetition(String query, String method, String params,HandleFunction function) {
-
-
-        new Thread(new Runnable() {
-            InputStream stream = null;
-            String result = null;
-            final Handler handler = HandlerCompat.createAsync(Looper.getMainLooper());
-            public void run() {
-                BufferedReader reader;
-                String line;
-
-                try {
-                    URL url = new URL(query);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setReadTimeout(10000 );
-                    conn.setConnectTimeout(15000 /* milliseconds */);
-                    conn.setRequestMethod(method);
-                    conn.setDoInput(true);
-                    conn.setDoOutput(true);
-                    conn.connect();
-
-                    OutputStream os = conn.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(
-                            new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(params);
-                    writer.flush();
-                    writer.close();
-                    os.close();
-
-                    stream = conn.getInputStream();
-                    StringBuilder sb = new StringBuilder();
-                    reader = new BufferedReader(new InputStreamReader(stream));
-
-
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    result = sb.toString();
-
-                    //Codi correcte
-                    handler.post(()->function.run(result));
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
 
 }
