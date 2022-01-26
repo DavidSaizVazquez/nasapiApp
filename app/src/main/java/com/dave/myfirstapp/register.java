@@ -3,6 +3,7 @@ package com.dave.myfirstapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -20,6 +21,9 @@ public class register extends AppCompatActivity {
         setContentView(R.layout.register);
     }
 
+    /**
+     * Executed with the onClick of the register button. Sends the data to register a user to the server
+     */
     public void onRegister(View view){
         EditText userText = findViewById(R.id.name);
         String username= userText.getText().toString();
@@ -47,7 +51,8 @@ public class register extends AppCompatActivity {
 
         String params = "name="+username+"&password="+psw+"&verifyPassword="+vpsw+"&age="+age+"&dexter="+dexter;
 
-        Utils.AsyncPetition("http://10.0.2.2:9000/Application/androidRegister","POST",params,(result -> {
+        //make the petition
+        Utils.AsyncPetition("http://10.0.2.2:9000/Android/androidRegister","POST",params,(result -> {
             try {
                 JSONObject jsonObject = new JSONObject(result);
                 if(jsonObject.has("register")) {
@@ -55,6 +60,7 @@ public class register extends AppCompatActivity {
                         finish();
                     }else {
                         TextView textView = findViewById(R.id.textView2);
+                        textView.setTextColor(Color.RED);
                         textView.setText(jsonObject.getString("error"));
                     }
                 }

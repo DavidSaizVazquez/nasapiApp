@@ -7,18 +7,21 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentActivity;
 
 /*
- * Main Activity class that loads {@link MainFragment}.
+ * Screen in case of successful login.
  */
 public class LoginSuccessful extends FragmentActivity {
 
+    /**
+     * Takes a parameter from the intent and uses it to show the name of the user and welcome him.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_successful);
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        String message = intent.getStringExtra("name");
         TextView textView = findViewById(R.id.textView);
-        textView.setText("Welcome!, "+message);
+        textView.setText("Welcome!, "+ message);
     }
 }

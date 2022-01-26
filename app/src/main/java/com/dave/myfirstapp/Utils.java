@@ -15,6 +15,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Utils {
+
+    /**
+     * Wrapper to the thread code that simplifies the petitions to the server.
+     * @param query: Query url
+     * @param method: HTTP method to apply
+     * @param params: parameters already in string form to add them to the query
+     * @param function: function lamba to execute inside of the handler once the data is retreived
+     */
     public static void AsyncPetition(String query, String method, String params, HandleFunction function) {
 
 
@@ -27,15 +35,17 @@ public class Utils {
                 String line;
 
                 try {
+                    //get the url and create a http conneciton
                     URL url = new URL(query);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setReadTimeout(10000 );
+                    conn.setReadTimeout(10000);
                     conn.setConnectTimeout(15000 /* milliseconds */);
                     conn.setRequestMethod(method);
                     conn.setDoInput(true);
                     conn.setDoOutput(true);
                     conn.connect();
 
+                    //buffer the params
                     OutputStream os = conn.getOutputStream();
                     BufferedWriter writer = new BufferedWriter(
                             new OutputStreamWriter(os, "UTF-8"));
@@ -43,18 +53,16 @@ public class Utils {
                     writer.flush();
                     writer.close();
                     os.close();
-
+                    //get the data from the input
                     stream = conn.getInputStream();
                     StringBuilder sb = new StringBuilder();
                     reader = new BufferedReader(new InputStreamReader(stream));
-
-
                     while ((line = reader.readLine()) != null) {
                         sb.append(line);
                     }
                     result = sb.toString();
 
-                    //Codi correcte
+                    //execute the lambda in function
                     handler.post(()->function.run(result));
 
                 } catch (Exception e) {
